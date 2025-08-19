@@ -1,38 +1,39 @@
 package com.nhnacademy.common;
 
+import java.util.concurrent.atomic.AtomicLong;
 import lombok.Getter;
 
 @Getter
 public class LogCounter {
-    private long infoCount;
-    private long warnCount;
-    private long errorCount;
+    private AtomicLong infoCount = new AtomicLong();
+    private AtomicLong warnCount = new AtomicLong();
+    private AtomicLong errorCount = new AtomicLong();
 
     public synchronized void plusInfoCount(){
-        infoCount++;
+        infoCount.incrementAndGet();
     }
 
     public synchronized void plusWarnCount(){
-        warnCount++;
+        warnCount.incrementAndGet();
     }
 
-    public synchronized void plusErrorCount(){
-        errorCount++;
+    public void plusErrorCount(){
+        errorCount.incrementAndGet();
     }
 
     public long getTotalCount(){
-        return infoCount + warnCount + errorCount;
+        return infoCount.get() + warnCount.get() + errorCount.get();
     }
 
     public float getInfoCountPercent(){
-        return (float) infoCount / getTotalCount();
+        return (float) infoCount.get() / getTotalCount();
     }
 
     public float getWarnCountPercent(){
-        return (float) warnCount / getTotalCount();
+        return (float) warnCount.get() / getTotalCount();
     }
 
     public float getErrorCountPercent(){
-        return (float) errorCount / getTotalCount();
+        return (float) errorCount.get() / getTotalCount();
     }
 }
