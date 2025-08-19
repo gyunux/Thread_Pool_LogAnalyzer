@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class Main {
     public static void main(String[] args) throws IOException, InterruptedException {
+        long startTime = System.currentTimeMillis();
         String fileName = "100000000_log_test.log";
         LogCounter logCounter = new LogCounter();
 
@@ -31,8 +32,6 @@ public class Main {
             threads.add(thread);
             thread.start();
         }
-
-        long startTime = System.currentTimeMillis();
 
         for(Thread thread : threads){
             thread.join();
