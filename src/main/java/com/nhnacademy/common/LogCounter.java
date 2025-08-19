@@ -8,15 +8,15 @@ public class LogCounter {
     private long warnCount;
     private long errorCount;
 
-    public void plusInfoCount(){
+    public synchronized void plusInfoCount(){
         infoCount++;
     }
 
-    public void plusWarnCount(){
+    public synchronized void plusWarnCount(){
         warnCount++;
     }
 
-    public void plusErrorCount(){
+    public synchronized void plusErrorCount(){
         errorCount++;
     }
 
