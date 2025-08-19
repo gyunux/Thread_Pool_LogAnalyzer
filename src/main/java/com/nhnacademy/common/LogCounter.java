@@ -5,35 +5,35 @@ import lombok.Getter;
 
 @Getter
 public class LogCounter {
-    private AtomicLong infoCount = new AtomicLong();
-    private AtomicLong warnCount = new AtomicLong();
-    private AtomicLong errorCount = new AtomicLong();
+    private long infoCount;
+    private long warnCount;
+    private long errorCount;
 
     public synchronized void plusInfoCount(){
-        infoCount.incrementAndGet();
+        infoCount++;
     }
 
     public synchronized void plusWarnCount(){
-        warnCount.incrementAndGet();
+        warnCount++;
     }
 
-    public void plusErrorCount(){
-        errorCount.incrementAndGet();
+    public synchronized void plusErrorCount(){
+        errorCount++;
     }
 
     public long getTotalCount(){
-        return infoCount.get() + warnCount.get() + errorCount.get();
+        return infoCount + warnCount + errorCount;
     }
 
     public float getInfoCountPercent(){
-        return (float) infoCount.get() / getTotalCount();
+        return (float) infoCount / getTotalCount();
     }
 
     public float getWarnCountPercent(){
-        return (float) warnCount.get() / getTotalCount();
+        return (float) warnCount / getTotalCount();
     }
 
     public float getErrorCountPercent(){
-        return (float) errorCount.get() / getTotalCount();
+        return (float) errorCount / getTotalCount();
     }
 }
