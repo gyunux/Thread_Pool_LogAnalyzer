@@ -1,4 +1,4 @@
-package com.nhnacademy;
+package com.nhnacademy.common;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
