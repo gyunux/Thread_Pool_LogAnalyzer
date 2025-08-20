@@ -7,28 +7,27 @@ import com.nhnacademy.loganalysis.multi.MultiThreadLogAnalyzer;
 import java.io.IOException;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
-
-import com.nhnacademy.loganalysis.multi.MultiThreadLogAnalyzer;
-import com.nhnacademy.common.LogCounter;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class Main {
     public static void main(String[] args) throws IOException, InterruptedException {
         long startTime = System.currentTimeMillis();
-        String fileName = "100000000_log_test.log";
-        LogCounter logCounter = new LogCounter();
+        String fileName = "10000000_log_test.log";
+
 
         List<String> lines = LogLoader.loadFileToList(fileName);
 
         List<Thread> threads = new ArrayList<>();
-        MultiThreadLogAnalyzer multiThreadLogAnalyzer = new MultiThreadLogAnalyzer(lines, logCounter);
+        LogCounter logCounter = new LogCounter();
 
-        for(int i = 0; i < 5; i++){
-            Thread thread = new Thread(multiThreadLogAnalyzer);
+        int threadCount = 5;
+        int bundleSize = lines.size() / threadCount;
+        for(int i = 0; i < threadCount; i++){
+            int from = i * bundleSize;
+            int to = ((i-1) * bundleSize == from) ? bundleSize : (i + 1) * bundleSize;
+
+            Thread thread = new Thread(new MultiThreadLogAnalyzer(lines.subList(from,to),logCounter));
             threads.add(thread);
             thread.start();
         }
