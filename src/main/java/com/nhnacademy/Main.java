@@ -19,14 +19,15 @@ public class Main {
         List<String> lines = LogLoader.loadFileToList(fileName);
 
         List<Thread> threads = new ArrayList<>();
-        LogCounter logCounter = new LogCounter();
+        List<LogCounter> logCounters = new ArrayList<>();
 
         int threadCount = 5;
         int bundleSize = lines.size() / threadCount;
         for(int i = 0; i < threadCount; i++){
             int from = i * bundleSize;
             int to = ((i-1) * bundleSize == from) ? bundleSize : (i + 1) * bundleSize;
-
+            LogCounter logCounter = new LogCounter();
+            logCounters.add(logCounter);
             Thread thread = new Thread(new MultiThreadLogAnalyzer(lines.subList(from,to),logCounter));
             threads.add(thread);
             thread.start();
@@ -36,11 +37,21 @@ public class Main {
             thread.join();
         }
 
+        int totalIntoCount = 0;
+        int totalWarnCount = 0;
+        int totalErrorCount = 0;
+        int totalCount;
+        for(int i = 0;i < threadCount ; i++){
+            totalIntoCount += (int) logCounters.get(i).getInfoCount().get();
+            totalWarnCount += (int) logCounters.get(i).getWarnCount().get();
+            totalErrorCount += (int) logCounters.get(i).getErrorCount().get();
+        }
+        totalCount = totalIntoCount + totalWarnCount + totalErrorCount;
         long endTime = System.currentTimeMillis();
-        log.info("INFO 로그 비율 : {}", logCounter.getInfoCountPercent());
-        log.info("WARN 로그 비율 : {}", logCounter.getWarnCountPercent());
-        log.info("ERROR 로그 비율 : {}", logCounter.getErrorCountPercent());
-        log.info("분석한 로그 총 갯수 : {}", logCounter.getTotalCount());
+        log.info("INFO 로그 비율 : {}", (float) totalIntoCount / totalCount);
+        log.info("WARN 로그 비율 : {}", (float) totalWarnCount / totalCount);
+        log.info("ERROR 로그 비율 : {}", (float) totalErrorCount / totalCount);
+        log.info("분석한 로그 총 갯수 : {}", totalCount);
         log.info("소요 시간 : {}", String.format("%d%s", endTime - startTime, "ms"));
     }
 }
