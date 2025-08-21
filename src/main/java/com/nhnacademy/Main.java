@@ -17,7 +17,7 @@ public class Main {
         LogCounter logCounter = new LogCounter();
         int consumerCount = 5;
 
-        Producer producer = new Producer(logQueue,100000000,consumerCount);
+        Producer producer = new Producer(logQueue,1000000000,consumerCount);
         producer.start();
 
         List<Consumer> consumers = new ArrayList<>();
