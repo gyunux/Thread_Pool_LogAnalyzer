@@ -2,36 +2,33 @@ package com.nhnacademy;
 
 
 import com.nhnacademy.common.LogCounter;
-import com.nhnacademy.thread_pool.Consumer;
-import com.nhnacademy.thread_pool.LogQueue;
-import com.nhnacademy.thread_pool.Producer;
-import java.util.ArrayList;
-import java.util.List;
+import com.nhnacademy.thread_pool.LogAnalyzerTask;
+import com.nhnacademy.thread_pool.LogAnalyzerThreadPool;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class Main {
     public static void main(String[] args) throws InterruptedException {
         long startTime = System.currentTimeMillis();
-        LogQueue logQueue = new LogQueue();
+
         LogCounter logCounter = new LogCounter();
         int consumerCount = 5;
+        LogAnalyzerThreadPool threadPool = new LogAnalyzerThreadPool(consumerCount);
 
-        Producer producer = new Producer(logQueue,1000000000,consumerCount);
-        producer.start();
-
-        List<Consumer> consumers = new ArrayList<>();
-        for (int i = 0; i < consumerCount; i++) {
-            Consumer consumer = new Consumer(logQueue, logCounter);
-            consumers.add(consumer);
-            consumer.start();
+        try (BufferedReader reader = new BufferedReader(new FileReader("10000000_log_test.log"))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                threadPool.execute(new LogAnalyzerTask(line, logCounter));
+            }
+        } catch (IOException e) {
+            log.error("파일 읽기 오류: {}", e.getMessage());
+        } finally {
+            threadPool.shutdown();
         }
 
-        producer.join();
-
-        for (Consumer consumer : consumers) {
-            consumer.join();
-        }
 
         long endTime = System.currentTimeMillis();
         log.info("INFO 로그 비율 : {}", logCounter.getInfoCountPercent());

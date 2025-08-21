@@ -2,29 +2,31 @@ package com.nhnacademy.thread_pool;
 
 import java.util.LinkedList;
 import java.util.Queue;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class LogQueue {
-    private Queue<String> logQueue;
+    private Queue<Runnable> logQueue;
     private final int MAX_SIZE = 10000000;
 
     public LogQueue(){
         this.logQueue = new LinkedList<>();
     }
 
-    public synchronized void addLog(String line) throws InterruptedException {
+    public synchronized void addTask(Runnable task) throws InterruptedException {
         while (logQueue.size() >= MAX_SIZE) {
             wait();
         }
-        logQueue.add(line);
+        logQueue.add(task);
         notifyAll();
     }
 
-    public synchronized String getLog() throws InterruptedException {
+    public synchronized Runnable getTask() throws InterruptedException {
         while (logQueue.isEmpty()) {
             wait();
         }
-        String line = logQueue.poll();
+        Runnable task = logQueue.poll();
         notifyAll();
-        return line;
+        return task;
     }
 }
